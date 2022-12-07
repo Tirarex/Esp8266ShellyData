@@ -31,8 +31,18 @@ int httpResponseCode ;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println();
-  Serial.println();
+
+  //Setup display
+  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for (;;); // Don't proceed, loop forever
+  }
+  display.display();
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+
+  display.print("Connecting to Wifi");
   Serial.print("Connecting to ");
   Serial.println(ssid);
 
@@ -42,6 +52,8 @@ void setup() {
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
+    display.print(".");
+    display.display();
   }
 
   Serial.println("");
@@ -50,15 +62,7 @@ void setup() {
   Serial.println(WiFi.localIP());
 
 
-  //Setup display
-  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    Serial.println(F("SSD1306 allocation failed"));
-    for (;;); // Don't proceed, loop forever
-  }
-  display.display();
-  display.clearDisplay();
-  display.setTextSize(2);
-  display.setTextColor(SSD1306_WHITE);
+
 
   //Sample text
   display.setCursor(0, 0);
@@ -113,7 +117,7 @@ void GetData() {
     display.println("Error, cant get ata from shelly");
     display.display();
   }
- 
+
   //Parse json
   DynamicJsonDocument doc(1337);
   deserializeJson(doc, sensorReadings);
